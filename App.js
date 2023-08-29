@@ -3,25 +3,24 @@ import {StyleSheet, Text, View, Button} from 'react-native';
 import * as FileSystem from 'expo-file-system';
 
 export default function App() {
-    const callback = downloadProgress => {
-        console.log(`${downloadProgress.totalBytesWritten} of ${downloadProgress.totalBytesExpectedToWrite} bytes`);
-    };
-
     return (
         <View style={styles.container}>
-            <Button title="Download" onPress={async () => {
+            <Button title="Download PDF" onPress={async () => {
+                console.log('downloading...');
                 const downloadResumable = FileSystem.createDownloadResumable(
                     'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
                     FileSystem.documentDirectory + 'dummy.pdf',
-                    {},
-                    callback
+                    {}
                 );
                 try {
                     const {uri} = await downloadResumable.downloadAsync();
                     console.log('Finished downloading to ', uri);
-
                     const fileInfo = await FileSystem.getInfoAsync(uri);
                     console.log(fileInfo);
+
+                    if(fileInfo.size === 0) {
+                        console.error(`${fileInfo.uri} has size ${fileInfo.size}`);
+                    }
                 } catch (e) {
                     console.error(e);
                 }
